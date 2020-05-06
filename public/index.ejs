@@ -968,52 +968,52 @@ var h1 = parseInt(res[i].metadata.time)
         <div id="body">
           <div class="container2">
             <form action="/upload" id="event_form" style="display: none;" class="form" autocomplete="on" method="POST" enctype="multipart/form-data">
-            <input type="email" name="email2" id="email2" style="display: none;">
+            <input required type="email" name="email2" id="email2" style="display: none;">
             <p id="update_Event" style="color: #456FFF;font-weight: bold;display: none;">Updating Event Now!</p>
             <p id="return_p" style="color: green;font-weight: bold;display: block;"><%= return_message %></p>
             <div class="form-control">
             <label id="date_label" for="date">Date</label>
-            <input type="date" name="date" id="date" autocomplete="bday">
+            <input required type="date" name="date" id="date" autocomplete="bday">
             <small></small>
             </div>
             <div class="form-control">
                 <label id="time_label" for="time">Start Time</label>
-                <input type="time" name="time" id="time">
+                <input required type="time" name="time" id="time">
                 <small></small>
             </div>
             <div class="form-control">
                 <label id="endTime_label" for="endTime">End Time</label>
-                <input type="time" name="endTime" id="endTime">
+                <input required type="time" name="endTime" id="endTime">
                 <small></small>
             </div>
             <div class="form-control">
                 <label id="notify_label" for="notify_before">Notify Before(in min)</label>
-                <input type="time" name="notify_before" id="notify_before" min="00:05" max="00:59">
+                <input required type="time" name="notify_before" id="notify_before" min="00:05" max="00:59">
                 <small></small>
             </div>
             
             <div class="form-control">
             <label id="title_label" for="title">Title</label>
-            <input type="text" name="title" id="title" autocomplete="organization-title" placeholder="Conference Call">
+            <input required type="text" name="title" id="title" autocomplete="organization-title" placeholder="Conference Call">
             <small></small>
             </div>
             
             <div class="form-control">
                 <label id="image_label" for="file">Image - name will be strongly encrypted :)</label>
-                <input type="file" name="file" id="file" autocomplete="photo" placeholder="image.png">
+                <input required type="file" name="file" id="file" autocomplete="photo" placeholder="image.png">
                 <small></small>
                 </div>
             
             <div class="form-control">
                 <label id="link_label" for="link">Link</label>
-                <input type="url" name="link" id="link" autocomplete="url" placeholder="https://google.com.meet">
+                <input required type="url" name="link" id="link" autocomplete="url" placeholder="https://google.com.meet">
                 <small></small>
             </div>
             
             
             <div class="form-control">
             <label id="note_label" for="note">Note</label>
-            <input type="text" name="note" id="note" placeholder="Add a small note">
+            <input required type="text" name="note" id="note" placeholder="Add a small note">
             <small></small>
             </div>
             <button type="submit" id="form_button" form="event_form">Schedule Event</button>
