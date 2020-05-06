@@ -57,7 +57,6 @@ file: (req,file)=>{
             note: req.body.note},
         bucketName: req.body.email2
       }
-      console.log(fileInfo)
       resolve(fileInfo)
     }) 
   })
@@ -101,6 +100,8 @@ app.get('/appid/callback',passport.authenticate(WebAppStrategy.STRATEGY_NAME))
 
 // Handle logout
 app.get('/appid/logout',function(req,res){
+  res.header('Acess-Control-Allow-Credentials','true')
+  res.header('Access-Control-Allow-Origin', '*');
     WebAppStrategy.logout(req)
     res.redirect('/')
     res.header('Acess-Control-Allow-Credentials','true')
@@ -111,6 +112,8 @@ app.get('/appid/logout',function(req,res){
 //app.use(passport.authenticate(WebAppStrategy.STRATEGY_NAME))
 
 app.use('/api',(req,res,next)=>{
+  res.header('Acess-Control-Allow-Credentials','true')
+  res.header('Access-Control-Allow-Origin', '*');
     if(req.user)
     {
         next()
@@ -123,7 +126,6 @@ app.use('/api',(req,res,next)=>{
 app.get('/api/user',(req,res)=>{
   res.header('Acess-Control-Allow-Credentials','true')
   res.header('Access-Control-Allow-Origin', '*');
-  console.log(req.user)
   if(req.user.picture)
   {
     res.json({
@@ -230,10 +232,8 @@ app.post('/delEvent',(req,res)=>{
   MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, db) {
   if (err) throw err;
   var dbo = db.db("iitt_task");
-  console.log(query_del)
   dbo.collection(collection_name).deleteOne(query_del,function (err,result) {
   if (err) throw err;
-  console.log(" 1 document(s) deleted");
   return_val = "Event deleted Successfully!"
   db.close();   
   })
@@ -287,7 +287,6 @@ app.get('/gallery/:email',(req,res)=>{
 app.get('/image/:email/:filename',(req,res)=>{
   res.header('Acess-Control-Allow-Credentials','true')
   res.header('Access-Control-Allow-Origin', '*');
-  console.log(req.params)
   var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
   const connection = mongoose.createConnection(url,{useNewUrlParser:true,useUnifiedTopology:true})
   let gfs;
