@@ -57,6 +57,7 @@ file: (req,file)=>{
             note: req.body.note},
         bucketName: req.body.email2
       }
+      console.log(fileInfo)
       resolve(fileInfo)
     }) 
   })
@@ -77,18 +78,15 @@ passport.use(new WebAppStrategy({
     clientId: "fb378d92-0180-4b2d-88ca-b0376fd32251",
     secret: "NjE1ZTU0YzctOTRjZC00ZWE1LWE4OGEtMjZlYjRkZWVlYWY2",
     oauthServerUrl:"https://eu-gb.appid.cloud.ibm.com/oauth/v4/c67db998-e74a-4e95-ab05-7325ca80414e",
-    redirectUri: "https://task-out.herokuapp.com/appid/callback"
+    redirectUri: "http://localhost:3000/appid/callback"
 }))
 
 app.get('/',(req,res)=>{
-res.header('Acess-Control-Allow-Credentials','true')
-res.header('Access-Control-Allow-Origin', '*');
   res.render('index',{
     return_message:req.query.rm,
     noti_msg:req.query.noti_list,
     notify: req.query.notify_now})
-}
-)
+})
 app.get('/appid/login',passport.authenticate(WebAppStrategy.STRATEGY_NAME,{
     successRedirect: '/',
     forceLogin: true
@@ -100,20 +98,14 @@ app.get('/appid/callback',passport.authenticate(WebAppStrategy.STRATEGY_NAME))
 
 // Handle logout
 app.get('/appid/logout',function(req,res){
-  res.header('Acess-Control-Allow-Credentials','true')
-  res.header('Access-Control-Allow-Origin', '*');
     WebAppStrategy.logout(req)
     res.redirect('/')
-    res.header('Acess-Control-Allow-Credentials','true')
-    res.header('Access-Control-Allow-Origin', '*');
 })
 
 // Protect the whole app
 //app.use(passport.authenticate(WebAppStrategy.STRATEGY_NAME))
 
 app.use('/api',(req,res,next)=>{
-  res.header('Acess-Control-Allow-Credentials','true')
-  res.header('Access-Control-Allow-Origin', '*');
     if(req.user)
     {
         next()
@@ -124,8 +116,7 @@ app.use('/api',(req,res,next)=>{
 })
 
 app.get('/api/user',(req,res)=>{
-  res.header('Acess-Control-Allow-Credentials','true')
-  res.header('Access-Control-Allow-Origin', '*');
+  console.log(req.user)
   if(req.user.picture)
   {
     res.json({
@@ -147,7 +138,6 @@ app.get('/api/user',(req,res)=>{
 })
 
 app.post('/notifications',(req,res)=>{
-  req.header('Access-Control-Allow-Origin', '*');
   var MongoClient = require('mongodb').MongoClient;
   var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
   MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, db) {
@@ -182,7 +172,6 @@ app.post('/notifications',(req,res)=>{
   
 })
 app.post('/pushnotifications',(req,res)=>{
-  req.header('Access-Control-Allow-Origin', '*');
   var MongoClient = require('mongodb').MongoClient;
   var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
   MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, db) {
@@ -192,36 +181,61 @@ app.post('/pushnotifications',(req,res)=>{
   var dateStr = date.getFullYear() + "-"  + ("00" + (date.getMonth() + 1)).slice(-2) + "-" + ("00" + (date.getDate())).slice(-2);
   var query = { "metadata.date" : dateStr } 
   var collection_name = req.body.emailval.split(",")[0] + ".files"    
-  var document = dbo.collection(collection_name).find(query).sort({ 'metadata.time': 1})
-  if(document)
+  dbo.collection(collection_name).find(query).sort({ 'metadata.time': 1}).toArray(function (err,result) 
   {
-    var date = new Date();
-    const currentTimeStamp = ("00" + date.getHours()).slice(-2) + ":" + ("00" + date.getMinutes()).slice(-2) 
-    const timestamp = document.metadata.time;
-    var t1 = new Date(dateStr+" "+ currentTimeStamp).getTime()
-    var t2 = new Date(document.metadata.date+" "+timestamp).getTime()
-    t2 = (t2-t1)/60000
-    var gap = parseInt(document.metadata.notify_before.split(":")[1])
-    if(gap > t2)
+    if(err) 
     {
-      if(req.body.emailval.split(",")[1] == 'false')
+      err_msg = err
+    }
+    if(result)
+    {
+      if(result.length > 0)
+      {            
+      for(var i=0; i<result.length;i++)
       {
-        res.json({notify: document}) 
+          var date = new Date();
+          const currentTimeStamp = ("00" + date.getHours()).slice(-2) + ":" + ("00" + date.getMinutes()).slice(-2) 
+          const timestamp = result[i].metadata.time;
+          var t1 = new Date(dateStr+" "+ currentTimeStamp).getTime()
+          var t2 = new Date(result[i].metadata.date+" "+timestamp).getTime()
+          t2 = (t2-t1)/60000
+          var gap = parseInt(result[i].metadata.notify_before.split(":")[1])
+          console.log("Actual Gap:" + t2)
+          console.log("Defined gap:" + gap)
+          if(gap > t2)
+          {
+            if(req.body.emailval.split(",")[1] == 'false')
+            {
+              console.log('Notification Now!!')
+              db.close()
+              res.json({notify: result[i]}) 
+              break;
+            }
+            else{
+              console.log('Already Notified!!')
+            }
+          }
+          else if(gap == t2)
+          {
+              console.log('Notification Now!!')
+              db.close()
+              res.json({notify: result[i]}) 
+              break;
+          }
+          else
+          {
+            //res.json({notify: null})
+          }
+      }
       }
     }
-    else if(gap == t2)
-    {
-        res.json({notify: document}) 
-    }
-  }    
+  })     
   })
 })
 app.post('/upload',schedule.single('file'),(req,res)=>{
-  req.header('Access-Control-Allow-Origin', '*');
   res.redirect('/?rm=Event Added Successfully!')  
 })
 app.post('/delEvent',(req,res)=>{
-  req.header('Access-Control-Allow-Origin', '*');
   var list = req.body.emailval.split(",");
   var collection_name = list[0] + ".files"
   var id = list[1];
@@ -232,8 +246,10 @@ app.post('/delEvent',(req,res)=>{
   MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, db) {
   if (err) throw err;
   var dbo = db.db("iitt_task");
+  console.log(query_del)
   dbo.collection(collection_name).deleteOne(query_del,function (err,result) {
   if (err) throw err;
+  console.log(" 1 document(s) deleted");
   return_val = "Event deleted Successfully!"
   db.close();   
   })
@@ -241,8 +257,6 @@ app.post('/delEvent',(req,res)=>{
   })
 })
 app.get('/files/:email/:filename',(req,res)=>{
-  res.header('Acess-Control-Allow-Credentials','true')
-  res.header('Access-Control-Allow-Origin', '*');
   var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
   const connection = mongoose.createConnection(url,{useNewUrlParser:true,useUnifiedTopology:true})
   let gfs;
@@ -264,8 +278,6 @@ app.get('/files/:email/:filename',(req,res)=>{
    
   })
 app.get('/gallery/:email',(req,res)=>{
-  res.header('Acess-Control-Allow-Credentials','true')
-  res.header('Access-Control-Allow-Origin', '*');
   var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
   const connection = mongoose.createConnection(url,{useNewUrlParser:true,useUnifiedTopology:true})
   let gfs;
@@ -285,8 +297,7 @@ app.get('/gallery/:email',(req,res)=>{
   })
   })
 app.get('/image/:email/:filename',(req,res)=>{
-  res.header('Acess-Control-Allow-Credentials','true')
-  res.header('Access-Control-Allow-Origin', '*');
+  console.log(req.params)
   var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
   const connection = mongoose.createConnection(url,{useNewUrlParser:true,useUnifiedTopology:true})
   let gfs;

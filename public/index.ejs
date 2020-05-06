@@ -256,9 +256,24 @@ var h1 = parseInt(res[i].metadata.time)
             xhttp3.send('emailval='+document.getElementById('email').innerText + ','+ params)
           }
         </script>
-        <script>
-          function noti(result) {
-            if (!("Notification" in window)) {
+    <script>  
+        setInterval(() => {
+          $().ready(()=>{
+                if($("#login").is(':hidden'))
+                {
+                    var xhttp2 = new XMLHttpRequest()
+                    xhttp2.withCredentials = true
+                    xhttp2.onreadystatechange = function () {
+                        if(this.readyState == 4 && this.status == 200)
+                        {
+                            var result = JSON.parse(this.responseText).notify
+                            if(result == null)
+                            {
+                                already_notified = false;
+                                console.log('No upcoming Notifications!! Schedule an event now!')
+                            }
+                            else{
+                              if (!("Notification" in window)) {
               alert("This browser does not support desktop notification");
             }
             else if (Notification.permission === "granted") {
@@ -291,41 +306,19 @@ var h1 = parseInt(res[i].metadata.time)
             }
               });
             }
-                            
-          }
-        </script>
-    <script>  
-        setInterval(() => {
-          $().ready(()=>{
-                if($("#login").is(':hidden'))
-                {
-                    var xhttp2 = new XMLHttpRequest()
-                    xhttp2.withCredentials = true
-                    xhttp2.onreadystatechange = function () {
-                        if(this.readyState == 4 && this.status == 200)
-                        {
-                            var result = JSON.parse(this.responseText).notify
-                            if(result == null)
-                            {
-                                already_notified = false;
-                                console.log('No upcoming Notifications!! Schedule an event now!')
-                            }
-                            else{
-                              //noti(result)
                             already_notified = true;
                             }
                         
                     }    
                   }
                     xhttp2.withCredentials = false
-                    //xhttp2.open("POST","/pushnotifications",false)
-                    xhttp2.open("POST","https://push-out-notifications.herokuapp.com/pushnotifications",false)
+                    xhttp2.open("POST","/pushnotifications",true)
                     xhttp2.setRequestHeader('Content-type',"application/x-www-form-urlencoded")
                     console.log(already_notified)
                     xhttp2.send('emailval='+document.getElementById('email').innerText+","+already_notified)
             
                   }})
-                  }, 45000);
+                  }, 25000);
   
     </script>
     <script>
@@ -381,7 +374,6 @@ var h1 = parseInt(res[i].metadata.time)
                         }
                     }
                     xhttp.withCredentials = false
-                    //https://notifications-out.herokuapp.com/notifications
                     xhttp.open("POST","/notifications",true)
                     xhttp.setRequestHeader('Content-type',"application/x-www-form-urlencoded")
                     xhttp.send('link='+document.getElementById('email').innerText)
@@ -445,7 +437,7 @@ var h1 = parseInt(res[i].metadata.time)
                     xhttp.send('link='+document.getElementById('email').innerText)
                 }
             })
-        }, 120000);
+        }, 55000);
     </script>
     <script>
     ;(function()
@@ -1005,26 +997,25 @@ var h1 = parseInt(res[i].metadata.time)
             <input type="text" name="title" id="title" autocomplete="organization-title" placeholder="Conference Call">
             <small></small>
             </div>
-            <div class="form-control">
-              <label id="note_label" for="note">Note</label>
-              <input type="text" name="note" id="note" placeholder="Add a small note">
-              <small></small>
-              </div>
-              <div class="form-control">
-                <label id="link_label" for="link">Link</label>
-                <input type="url" name="link" id="link" autocomplete="url" placeholder="https://google.com.meet">
-                <small></small>
-            </div>
+            
             <div class="form-control">
                 <label id="image_label" for="file">Image - name will be strongly encrypted :)</label>
                 <input type="file" name="file" id="file" autocomplete="photo" placeholder="image.png">
                 <small></small>
                 </div>
             
+            <div class="form-control">
+                <label id="link_label" for="link">Link</label>
+                <input type="url" name="link" id="link" autocomplete="url" placeholder="https://google.com.meet">
+                <small></small>
+            </div>
             
             
-            
-          
+            <div class="form-control">
+            <label id="note_label" for="note">Note</label>
+            <input type="text" name="note" id="note" placeholder="Add a small note">
+            <small></small>
+            </div>
             <button type="submit" id="form_button" form="event_form">Schedule Event</button>
             </form>
             </div> 
