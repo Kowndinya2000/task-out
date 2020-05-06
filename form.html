@@ -147,7 +147,7 @@
           <div class="card card-signin my-5">
             <div class="card-body">
               <h5 class="card-title text-center">Sign In</h5>
-              <form class="form-signin">
+              <form class="form-signin" action="/upload" id="event_form" style="display: none;" autocomplete="on" method="POST" enctype="multipart/form-data">
                 <div class="form-label-group">
                     <input required class="form-control" type="date" name="date" id="date" autocomplete="bday">
                     <label id="date_label" for="date">Date</label>
@@ -183,7 +183,8 @@
                     <input required class="form-control" type="text" name="note" id="note" placeholder="Add a small note">
                     <label id="note_label" for="note">Note</label>
                 </div>
-                <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Sign in</button>
+                <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit" id="form_button" form="event_form">Schedule Event</button>
+                <button  type="submit">Sign in</button>
               </form>
             </div>
           </div>
