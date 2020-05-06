@@ -82,11 +82,14 @@ passport.use(new WebAppStrategy({
 }))
 
 app.get('/',(req,res)=>{
+res.header('Acess-Control-Allow-Credentials','true')
+res.header('Access-Control-Allow-Origin', '*');
   res.render('index',{
     return_message:req.query.rm,
     noti_msg:req.query.noti_list,
     notify: req.query.notify_now})
-})
+}
+)
 app.get('/appid/login',passport.authenticate(WebAppStrategy.STRATEGY_NAME,{
     successRedirect: '/',
     forceLogin: true
@@ -100,6 +103,8 @@ app.get('/appid/callback',passport.authenticate(WebAppStrategy.STRATEGY_NAME))
 app.get('/appid/logout',function(req,res){
     WebAppStrategy.logout(req)
     res.redirect('/')
+    res.header('Acess-Control-Allow-Credentials','true')
+    res.header('Access-Control-Allow-Origin', '*');
 })
 
 // Protect the whole app
@@ -116,6 +121,8 @@ app.use('/api',(req,res,next)=>{
 })
 
 app.get('/api/user',(req,res)=>{
+  res.header('Acess-Control-Allow-Credentials','true')
+  res.header('Access-Control-Allow-Origin', '*');
   console.log(req.user)
   if(req.user.picture)
   {
@@ -138,6 +145,7 @@ app.get('/api/user',(req,res)=>{
 })
 
 app.post('/notifications',(req,res)=>{
+  req.header('Access-Control-Allow-Origin', '*');
   var MongoClient = require('mongodb').MongoClient;
   var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
   MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, db) {
@@ -172,6 +180,7 @@ app.post('/notifications',(req,res)=>{
   
 })
 app.post('/pushnotifications',(req,res)=>{
+  req.header('Access-Control-Allow-Origin', '*');
   var MongoClient = require('mongodb').MongoClient;
   var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
   MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, db) {
@@ -233,9 +242,11 @@ app.post('/pushnotifications',(req,res)=>{
   })
 })
 app.post('/upload',schedule.single('file'),(req,res)=>{
+  req.header('Access-Control-Allow-Origin', '*');
   res.redirect('/?rm=Event Added Successfully!')  
 })
 app.post('/delEvent',(req,res)=>{
+  req.header('Access-Control-Allow-Origin', '*');
   var list = req.body.emailval.split(",");
   var collection_name = list[0] + ".files"
   var id = list[1];
@@ -257,6 +268,8 @@ app.post('/delEvent',(req,res)=>{
   })
 })
 app.get('/files/:email/:filename',(req,res)=>{
+  res.header('Acess-Control-Allow-Credentials','true')
+  res.header('Access-Control-Allow-Origin', '*');
   var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
   const connection = mongoose.createConnection(url,{useNewUrlParser:true,useUnifiedTopology:true})
   let gfs;
@@ -278,6 +291,8 @@ app.get('/files/:email/:filename',(req,res)=>{
    
   })
 app.get('/gallery/:email',(req,res)=>{
+  res.header('Acess-Control-Allow-Credentials','true')
+  res.header('Access-Control-Allow-Origin', '*');
   var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
   const connection = mongoose.createConnection(url,{useNewUrlParser:true,useUnifiedTopology:true})
   let gfs;
@@ -297,6 +312,8 @@ app.get('/gallery/:email',(req,res)=>{
   })
   })
 app.get('/image/:email/:filename',(req,res)=>{
+  res.header('Acess-Control-Allow-Credentials','true')
+  res.header('Access-Control-Allow-Origin', '*');
   console.log(req.params)
   var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
   const connection = mongoose.createConnection(url,{useNewUrlParser:true,useUnifiedTopology:true})
