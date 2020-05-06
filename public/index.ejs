@@ -312,7 +312,7 @@ var h1 = parseInt(res[i].metadata.time)
                     }    
                   }
                     xhttp2.withCredentials = false
-                    xhttp2.open("POST","/pushnotifications",true)
+                    xhttp2.open("POST","/pushnotifications",false)
                     //xhttp2.open("POST","https://push-out-notifications.herokuapp.com/pushnotifications",true)
                     xhttp2.setRequestHeader('Content-type',"application/x-www-form-urlencoded")
                     console.log(already_notified)
