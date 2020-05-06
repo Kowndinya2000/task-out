@@ -78,7 +78,7 @@ passport.use(new WebAppStrategy({
     clientId: "fb378d92-0180-4b2d-88ca-b0376fd32251",
     secret: "NjE1ZTU0YzctOTRjZC00ZWE1LWE4OGEtMjZlYjRkZWVlYWY2",
     oauthServerUrl:"https://eu-gb.appid.cloud.ibm.com/oauth/v4/c67db998-e74a-4e95-ab05-7325ca80414e",
-    redirectUri: "http://localhost:3000/appid/callback"
+    redirectUri: "https://task-out.herokuapp.com/appid/callback"
 }))
 
 app.get('/',(req,res)=>{

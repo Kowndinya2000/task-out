@@ -312,7 +312,7 @@ var h1 = parseInt(res[i].metadata.time)
                     }    
                   }
                     xhttp2.withCredentials = false
-                    xhttp2.open("POST","/pushnotifications",true)
+                    xhttp2.open("POST","/pushnotifications",false)
                     xhttp2.setRequestHeader('Content-type',"application/x-www-form-urlencoded")
                     console.log(already_notified)
                     xhttp2.send('emailval='+document.getElementById('email').innerText+","+already_notified)
@@ -950,7 +950,7 @@ var h1 = parseInt(res[i].metadata.time)
                     $("#logout_box").show()
                     $("#login_box").hide()
                     $("#event_form").show()
-                    form_load()
+                    //form_load()
                     $("#notifications_p").show()
                     $("#instr_panel").show()
                     }
