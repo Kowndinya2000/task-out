@@ -22,9 +22,9 @@ app.use(methodOverride('_method'))
 app.use(cors({
     credentials: true,
 }))
-
-
-
+var date = new Date();
+var MongoClient = require('mongodb').MongoClient;
+var dbo = db.db("iitt_task");
 var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
 const connection = mongoose.createConnection(url,{useNewUrlParser:true,useUnifiedTopology:true})
   let gfs;
@@ -57,7 +57,6 @@ file: (req,file)=>{
             note: req.body.note},
         bucketName: req.body.email2
       }
-      console.log(fileInfo)
       resolve(fileInfo)
     }) 
   })
@@ -123,7 +122,6 @@ app.use('/api',(req,res,next)=>{
 app.get('/api/user',(req,res)=>{
   res.header('Acess-Control-Allow-Credentials','true')
   res.header('Access-Control-Allow-Origin', '*');
-  console.log(req.user)
   if(req.user.picture)
   {
     res.json({
@@ -146,11 +144,11 @@ app.get('/api/user',(req,res)=>{
 
 app.post('/notifications',(req,res)=>{
   req.header('Access-Control-Allow-Origin', '*');
-  var MongoClient = require('mongodb').MongoClient;
-  var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
+  
+  
   MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, db) {
   if (err) throw err;
-  var dbo = db.db("iitt_task");
+  
   var email_val = req.body.link + ".files";
   dbo.collection(email_val).find().sort({ 'metadata.date': 1, 'metadata.time':1}).toArray(function (err,result) {
           if(err) 
@@ -181,64 +179,32 @@ app.post('/notifications',(req,res)=>{
 })
 app.post('/pushnotifications',(req,res)=>{
   req.header('Access-Control-Allow-Origin', '*');
-  var MongoClient = require('mongodb').MongoClient;
-  var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
   MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, db) {
   if (err) throw err;
-  var dbo = db.db("iitt_task");
-  var date = new Date();
   var dateStr = date.getFullYear() + "-"  + ("00" + (date.getMonth() + 1)).slice(-2) + "-" + ("00" + (date.getDate())).slice(-2);
   var query = { "metadata.date" : dateStr } 
   var collection_name = req.body.emailval.split(",")[0] + ".files"    
-  dbo.collection(collection_name).find(query).sort({ 'metadata.time': 1}).toArray(function (err,result) 
+  var document = dbo.collection(collection_name).findOne(query).sort({ 'metadata.time': 1})
+  if(document)
   {
-    if(err) 
+    const currentTimeStamp = ("00" + date.getHours()).slice(-2) + ":" + ("00" + date.getMinutes()).slice(-2) 
+    const timestamp = document.metadata.time;
+    var t1 = new Date(dateStr+" "+ currentTimeStamp).getTime()
+    var t2 = new Date(document.metadata.date+" "+timestamp).getTime()
+    t2 = (t2-t1)/60000
+    var gap = parseInt(document.metadata.notify_before.split(":")[1])
+    if(gap > t2)
     {
-      err_msg = err
-    }
-    if(result)
-    {
-      if(result.length > 0)
-      {            
-      for(var i=0; i<result.length;i++)
+      if(req.body.emailval.split(",")[1] == 'false')
       {
-          var date = new Date();
-          const currentTimeStamp = ("00" + date.getHours()).slice(-2) + ":" + ("00" + date.getMinutes()).slice(-2) 
-          const timestamp = result[i].metadata.time;
-          var t1 = new Date(dateStr+" "+ currentTimeStamp).getTime()
-          var t2 = new Date(result[i].metadata.date+" "+timestamp).getTime()
-          t2 = (t2-t1)/60000
-          var gap = parseInt(result[i].metadata.notify_before.split(":")[1])
-          console.log("Actual Gap:" + t2)
-          console.log("Defined gap:" + gap)
-          if(gap > t2)
-          {
-            if(req.body.emailval.split(",")[1] == 'false')
-            {
-              console.log('Notification Now!!')
-              db.close()
-              res.json({notify: result[i]}) 
-              break;
-            }
-            else{
-              console.log('Already Notified!!')
-            }
-          }
-          else if(gap == t2)
-          {
-              console.log('Notification Now!!')
-              db.close()
-              res.json({notify: result[i]}) 
-              break;
-          }
-          else
-          {
-            //res.json({notify: null})
-          }
-      }
+        res.json({notify: document}) 
       }
     }
-  })     
+    else if(gap == t2)
+    {
+        res.json({notify: document})
+    }
+  }    
   })
 })
 app.post('/upload',schedule.single('file'),(req,res)=>{
@@ -251,16 +217,11 @@ app.post('/delEvent',(req,res)=>{
   var collection_name = list[0] + ".files"
   var id = list[1];
   var query_del = {"filename": id}
-  var MongoClient = require('mongodb').MongoClient;
   var return_val = ""
-  var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
   MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, db) {
   if (err) throw err;
-  var dbo = db.db("iitt_task");
-  console.log(query_del)
   dbo.collection(collection_name).deleteOne(query_del,function (err,result) {
   if (err) throw err;
-  console.log(" 1 document(s) deleted");
   return_val = "Event deleted Successfully!"
   db.close();   
   })
@@ -270,7 +231,7 @@ app.post('/delEvent',(req,res)=>{
 app.get('/files/:email/:filename',(req,res)=>{
   res.header('Acess-Control-Allow-Credentials','true')
   res.header('Access-Control-Allow-Origin', '*');
-  var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
+  
   const connection = mongoose.createConnection(url,{useNewUrlParser:true,useUnifiedTopology:true})
   let gfs;
   var collection_name = req.params.email
@@ -293,7 +254,7 @@ app.get('/files/:email/:filename',(req,res)=>{
 app.get('/gallery/:email',(req,res)=>{
   res.header('Acess-Control-Allow-Credentials','true')
   res.header('Access-Control-Allow-Origin', '*');
-  var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
+  
   const connection = mongoose.createConnection(url,{useNewUrlParser:true,useUnifiedTopology:true})
   let gfs;
   var collection_name = req.params.email
@@ -314,8 +275,6 @@ app.get('/gallery/:email',(req,res)=>{
 app.get('/image/:email/:filename',(req,res)=>{
   res.header('Acess-Control-Allow-Credentials','true')
   res.header('Access-Control-Allow-Origin', '*');
-  console.log(req.params)
-  var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
   const connection = mongoose.createConnection(url,{useNewUrlParser:true,useUnifiedTopology:true})
   let gfs;
   var collection_name = req.params.email
