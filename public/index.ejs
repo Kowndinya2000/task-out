@@ -256,24 +256,9 @@ var h1 = parseInt(res[i].metadata.time)
             xhttp3.send('emailval='+document.getElementById('email').innerText + ','+ params)
           }
         </script>
-    <script>  
-        setInterval(() => {
-          $().ready(()=>{
-                if($("#login").is(':hidden'))
-                {
-                    var xhttp2 = new XMLHttpRequest()
-                    xhttp2.withCredentials = true
-                    xhttp2.onreadystatechange = function () {
-                        if(this.readyState == 4 && this.status == 200)
-                        {
-                            var result = JSON.parse(this.responseText).notify
-                            if(result == null)
-                            {
-                                already_notified = false;
-                                console.log('No upcoming Notifications!! Schedule an event now!')
-                            }
-                            else{
-                              if (!("Notification" in window)) {
+        <script>
+          function noti(result) {
+            if (!("Notification" in window)) {
               alert("This browser does not support desktop notification");
             }
             else if (Notification.permission === "granted") {
@@ -306,6 +291,27 @@ var h1 = parseInt(res[i].metadata.time)
             }
               });
             }
+                            
+          }
+        </script>
+    <script>  
+        setInterval(() => {
+          $().ready(()=>{
+                if($("#login").is(':hidden'))
+                {
+                    var xhttp2 = new XMLHttpRequest()
+                    xhttp2.withCredentials = true
+                    xhttp2.onreadystatechange = function () {
+                        if(this.readyState == 4 && this.status == 200)
+                        {
+                            var result = JSON.parse(this.responseText).notify
+                            if(result == null)
+                            {
+                                already_notified = false;
+                                console.log('No upcoming Notifications!! Schedule an event now!')
+                            }
+                            else{
+                              //noti(result)
                             already_notified = true;
                             }
                         
