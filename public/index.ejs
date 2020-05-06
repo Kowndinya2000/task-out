@@ -258,6 +258,9 @@ var h1 = parseInt(res[i].metadata.time)
         </script>
     <script>  
         setInterval(() => {
+          $().ready(()=>{
+                if($("#login").is(':hidden'))
+                {
                     var xhttp2 = new XMLHttpRequest()
                     xhttp2.withCredentials = true
                     xhttp2.onreadystatechange = function () {
@@ -280,6 +283,9 @@ var h1 = parseInt(res[i].metadata.time)
                           dir : "ltr"
                        };
                     var notification = new Notification(result.metadata.title,options);
+                    notification.onclick = function () {
+                      window.open("" + result.metadata.link + "","_blank")
+                    }
             }
             else if (Notification.permission !== 'denied') {
               Notification.requestPermission(function (permission) {
@@ -294,6 +300,9 @@ var h1 = parseInt(res[i].metadata.time)
                           dir : "ltr"
                        };
                     var notification = new Notification(result.metadata.title,options);
+                    notification.onclick = function () {
+                      window.open("" + result.metadata.link + "","_blank")
+                    }
             }
               });
             }
@@ -308,7 +317,9 @@ var h1 = parseInt(res[i].metadata.time)
                     console.log(already_notified)
                     xhttp2.send('emailval='+document.getElementById('email').innerText+","+already_notified)
             
-        }, 25000);
+                  }})
+                  }, 25000);
+  
     </script>
     <script>
             $().ready(()=>{
@@ -832,6 +843,7 @@ var h1 = parseInt(res[i].metadata.time)
         color: #6d6d6d;
       }
       </style> 
+      <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600&display=swap" rel="stylesheet">
       <script>
         function form_load() {
             var date = new Date()
@@ -874,7 +886,7 @@ var h1 = parseInt(res[i].metadata.time)
                 
             </div>
             <div style="flex: 5;">
-                <img src="pro.png" id="picture" alt="Profile Image" style="padding-top: 1rem;;height: 3rem;width: 3rem;margin: auto 0;padding: auto 0;display: none;" class="ifrms">
+                <img src="w.png" id="picture" alt="Profile Image" style="padding-top: 1rem;height: 3rem;width: 3rem;margin: auto 0;padding: auto 0;display: none;" class="ifrms">
             </div>
         </div>
         <div style="display: flex;float: right;" id="login_box">
@@ -900,6 +912,11 @@ var h1 = parseInt(res[i].metadata.time)
               </div>
               </div>    
           </div>
+          <div style="margin-top: 2rem;width: 15rem;color: #838794;font-weight: bolder;font-family: 'Nunito', sans-serif;margin: 0 2rem;">
+            * You can click on the notification prompt to navigate to the link of the event you've specified
+    <br><br>* Upcoming Notification panel refreshes for every 1 minute
+    <br><br>* Refreshing the page may sometimes take a while as there are scheduled database requests at back 
+          </div>
         </div>
           <script src="https://static.codepen.io/assets/common/stopExecutionOnTimeout-157cd5b220a5c80d4ff8e0e70ac069bffd87a61252088146915e8726e5d9f147.js"></script>
           <script id="rendered-js">
@@ -918,13 +935,24 @@ var h1 = parseInt(res[i].metadata.time)
                     $("#picture").show()
                     if(resp.user.picture)
                     {
-                        $("#picture").attr("src",resp.user.picture)
+                      document.getElementById("picture").src = resp.user.picture
+                    }
+                    else{
+                    var first_Char = resp.user.name.toLowerCase().split(" ")[0].charAt(0)
+                    if(first_Char == 'U' || first_Char == 'u')
+                    {
+                      first_Char = resp.user.name.toLowerCase().split(" ")[1].charAt(0)
+                    }
+                    var img_src = first_Char.toString() + ".png"
+                    console.log(img_src)
+                    document.getElementById("picture").src = img_src
                     }
                     $("#logout_box").show()
                     $("#login_box").hide()
                     $("#event_form").show()
                     form_load()
                     $("#notifications_p").show()
+                    $("#instr_panel").show()
                     }
                     
                 })
@@ -996,6 +1024,10 @@ var h1 = parseInt(res[i].metadata.time)
      
     </div>
     <div style="flex: 1;">
+    <p style="color:#838794;font-family: 'Nunito',sans-serif;max-width: 400px;max-height: 100px;margin: 30px auto 0;display: none;" id="instr_panel">
+    * As soon as events load, tap once to start auto-scroll
+<br><br>* Hover to pause scrolling
+    </p>
         <div class="container">
             <div>
               <div class="header" style="height: 10rem;"> 

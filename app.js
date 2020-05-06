@@ -116,7 +116,7 @@ app.use('/api',(req,res,next)=>{
 })
 
 app.get('/api/user',(req,res)=>{
-  //console.log(req.user)
+  console.log(req.user)
   if(req.user.picture)
   {
     res.json({
@@ -176,12 +176,10 @@ app.post('/pushnotifications',(req,res)=>{
   var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
   MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, db) {
   if (err) throw err;
-  console.log("Database created!");
   var dbo = db.db("iitt_task");
   var date = new Date();
   var dateStr = date.getFullYear() + "-"  + ("00" + (date.getMonth() + 1)).slice(-2) + "-" + ("00" + (date.getDate())).slice(-2);
   var query = { "metadata.date" : dateStr } 
-
   var collection_name = req.body.emailval.split(",")[0] + ".files"    
   dbo.collection(collection_name).find(query).sort({ 'metadata.time': 1}).toArray(function (err,result) 
   {
@@ -247,7 +245,6 @@ app.post('/delEvent',(req,res)=>{
   var url = "mongodb+srv://kowndi:kowndi@6772@cluster0-wm2aj.mongodb.net/iitt_task?retryWrites=true&w=majority";
   MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, db) {
   if (err) throw err;
-  console.log("Database created!");
   var dbo = db.db("iitt_task");
   console.log(query_del)
   dbo.collection(collection_name).deleteOne(query_del,function (err,result) {
