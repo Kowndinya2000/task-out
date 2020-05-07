@@ -1,15 +1,17 @@
 {
-  "name": "task-out",
-  "version": "1.0.0",
-  "description": "\"A Novel Task Management Application\"",
-  "main": "app.js",
+  "name": "express-project",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "start": "node app.js",
+    "start": "node ./bin/www",
     "dev": "nodemon app.js"
   },
-  "author": "Kowndinya Boyalakuntla",
-  "license": "ISC",
   "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "hbs": "~4.0.4",
+    "http-errors": "~1.6.3",
+    "morgan": "~1.9.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",

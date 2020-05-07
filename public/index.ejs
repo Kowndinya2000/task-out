@@ -855,7 +855,6 @@ var h1 = parseInt(res[i].metadata.time)
             document.getElementById('endTime_label').click()
             document.getElementById('notify_before').value = "00:05"
             document.getElementById('notify_label').click()
-            document.getElementById('image_label').click()
         }
     </script>
 </head>
@@ -868,16 +867,8 @@ var h1 = parseInt(res[i].metadata.time)
                     </div>
                 </div>
             </div>
-            <h1 class="wait1">Please Wait...</h1>
-            
+            <h1 class="wait1">Please Wait...</h1> 
         </div>
-        <!-- <div id="overlay">
-            <div class="spinner-box">
-                <div class="circle-border">
-                <div class="circle-core"></div>
-                </div>
-            </div>
-        </div> -->
         <div style="background: #eceeff;display: flex;">
             <div style="flex: 70;font-size: 1.5rem;color: #53588b;padding: 1rem;padding: auto 0;margin: auto 0;" id="user">
                 
@@ -973,7 +964,7 @@ var h1 = parseInt(res[i].metadata.time)
             <p id="return_p" style="color: green;font-weight: bold;display: block;"><%= return_message %></p>
             <div class="form-control">
             <label id="date_label" for="date">Date</label>
-            <input type="date" name="date" id="date" autocomplete="bday">
+            <input type="date" name="date" id="date" autocomplete="bday" required>
             <small></small>
             </div>
             <div class="form-control">
@@ -983,39 +974,34 @@ var h1 = parseInt(res[i].metadata.time)
             </div>
             <div class="form-control">
                 <label id="endTime_label" for="endTime">End Time</label>
-                <input type="time" name="endTime" id="endTime">
+                <input type="time" name="endTime" id="endTime" required >
                 <small></small>
             </div>
             <div class="form-control">
                 <label id="notify_label" for="notify_before">Notify Before(in min)</label>
-                <input type="time" name="notify_before" id="notify_before" min="00:05" max="00:59">
+                <input type="time" name="notify_before" id="notify_before" min="00:05" max="00:59" required >
                 <small></small>
             </div>
-            
             <div class="form-control">
             <label id="title_label" for="title">Title</label>
-            <input type="text" name="title" id="title" autocomplete="organization-title" placeholder="Conference Call">
+            <input type="text" name="title" id="title" autocomplete="organization-title" placeholder="Conference Call" required >
             <small></small>
             </div>
-            
             <div class="form-control">
-                <label id="image_label" for="file">Image - name will be strongly encrypted :)</label>
-                <input type="file" name="file" id="file" autocomplete="photo" placeholder="image.png">
-                <small></small>
-                </div>
-            
+              <label id="note_label" for="note">Note</label>
+              <input type="text" name="note" id="note" placeholder="Add a small note" required >
+              <small></small>
+            </div>
             <div class="form-control">
                 <label id="link_label" for="link">Link</label>
-                <input type="url" name="link" id="link" autocomplete="url" placeholder="https://google.com.meet">
+                <input type="url" name="link" id="link" autocomplete="url" placeholder="https://google.com.meet" required >
                 <small></small>
             </div>
-            
-            
             <div class="form-control">
-            <label id="note_label" for="note">Note</label>
-            <input type="text" name="note" id="note" placeholder="Add a small note">
-            <small></small>
-            </div>
+                <label id="image_label" for="file">Image - name will be strongly encrypted :)</label>
+                <input type="file" name="file" id="file" autocomplete="photo" placeholder="image.png" required >
+                <small></small>
+                </div>
             <button type="submit" id="form_button" form="event_form">Schedule Event</button>
             </form>
             </div> 
